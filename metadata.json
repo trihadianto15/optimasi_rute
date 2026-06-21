@@ -1,0 +1,6 @@
+{
+  "name": "OptiRoute",
+  "description": "Sistem optimasi rute pengiriman paket menggunakan Nearest Neighbor dan Haversine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
