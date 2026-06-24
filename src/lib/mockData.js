@@ -1,6 +1,7 @@
 import {
   normalizeText,
-  extractRTRW
+  extractRTRW,
+  extractVillage
 } from "./ocr";
 
 /**
@@ -22,69 +23,114 @@ export function matchAddressToDatabase(
   extractedText,
   database
 ) {
-  if (!extractedText) {
-    console.log("OCR kosong");
-    return null;
-  }
 
-  if (!Array.isArray(database)) {
-    console.log("Database bukan array");
-    return null;
-  }
-
-  console.log("DATABASE:", database);
+  if (!extractedText) return null;
 
   const extractedRTRW =
     extractRTRW(extractedText);
-
-  console.log("OCR:", extractedText);
-  console.log("RT/RW OCR:", extractedRTRW);
 
   if (
     extractedRTRW.rt == null ||
     extractedRTRW.rw == null
   ) {
-    console.log("RT/RW tidak ditemukan");
     return null;
   }
 
-  for (const record of database) {
+  /**
+   * Tahap 1
+   * Cari RT RW yang sama
+   */
+  const candidates =
+    database.filter((record) => {
 
-    console.log("RECORD:", record);
+      const rtDB =
+        Number(record.rt);
 
-    const rtDB = Number(record.rt);
-    const rwDB = Number(record.rw);
+      const rwDB =
+        Number(record.rw);
 
-    console.log({
-      rtOCR: extractedRTRW.rt,
-      rwOCR: extractedRTRW.rw,
-      rtDB,
-      rwDB
+      return (
+        rtDB === extractedRTRW.rt &&
+        rwDB === extractedRTRW.rw
+      );
+
     });
 
-    const rtMatch =
-      extractedRTRW.rt === rtDB;
+  console.log(
+    "Candidate:",
+    candidates
+  );
 
-    const rwMatch =
-      extractedRTRW.rw === rwDB;
+  /**
+   * Tidak ditemukan
+   */
+  if (candidates.length === 0) {
+    return null;
+  }
 
-    if (rtMatch && rwMatch) {
+  /**
+   * Hanya satu data
+   */
+  if (candidates.length === 1) {
+
+    return {
+      ...candidates[0],
+      originalText:
+        extractedText
+    };
+
+  }
+
+  /**
+   * Lebih dari satu data
+   * cek desa
+   */
+  const lowerText =
+    extractedText.toLowerCase();
+
+  for (const candidate of candidates) {
+
+    const desaDB =
+      (
+        candidate.desa ||
+        candidate.nama ||
+        ""
+      )
+        .toLowerCase()
+        .trim();
+
+    if (
+      desaDB &&
+      lowerText.includes(desaDB)
+    ) {
 
       console.log(
-        "MATCH DITEMUKAN:",
-        record
+        "MATCH DESA:",
+        desaDB
       );
 
       return {
-        ...record,
-        originalText: extractedText
+        ...candidate,
+        originalText:
+          extractedText
       };
+
     }
+
   }
 
+  /**
+   * Fallback
+   * Ambil kandidat pertama
+   */
   console.log(
-    "TIDAK ADA YANG COCOK"
+    "RT/RW sama, desa tidak ditemukan"
   );
 
-  return null;
-} null;
+  return {
+    ...candidates[0],
+    originalText:
+      extractedText
+  };
+
+}

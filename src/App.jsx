@@ -30,6 +30,7 @@ import {
   normalizeText
 } from "./lib/ocr";
 
+
 export default function App() {
 
   const [uploads, setUploads] = useState([]);
@@ -220,35 +221,53 @@ const startSimulation =
 
         if (matched) {
 
-          matchedLocations.push({
+          const alreadyExists =
+            allPoints.some(
+              p =>
+                p.rt === matched.rt &&
+                p.rw === matched.rw &&
+                p.desa === matched.desa
+            );
 
-            ...matched,
+          if (!alreadyExists) {
 
-            uniqueId:
-              Date.now() +
-              Math.random(),
+            matchedLocations.push({
 
-            imageName:
-              item.type ===
-              "manual"
-                ? "Input Manual"
-                : item.file.name,
+              ...matched,
 
-            source:
-              item.type,
+              uniqueId:
+                Date.now() +
+                Math.random(),
 
-            status:
-              "belum"
+              imageName:
+                item.type === "manual"
+                  ? "Input Manual"
+                  : item.file.name,
 
-          });
+              source:
+                item.type,
+
+              status:
+                "belum"
+
+            });
+
+          } else {
+
+            console.log(
+              "Alamat sudah pernah diproses:",
+              matched.nama,
+              matched.desa
+            );
+
+          }
 
         } else {
 
           unmatchedFiles.push({
 
             imageName:
-              item.type ===
-              "manual"
+              item.type === "manual"
                 ? "Input Manual"
                 : item.file.name,
 
@@ -258,11 +277,11 @@ const startSimulation =
             ocrText:
               cleanText
 
-          });
+            });
+
+          }
 
         }
-
-      }
 
       /**
        * SIMPAN HISTORY OCR
@@ -659,12 +678,10 @@ return (
               p-4
             "
           >
-
             <RouteMap
               route={fullRoute}
               allPoints={allPoints}
             />
-
           </div>
 
           {/* HASIL RUTE */}
@@ -677,7 +694,6 @@ return (
               p-5
             "
           >
-
             <h2
               className="
                 text-xl
@@ -694,11 +710,10 @@ return (
               segmentDistances={segmentDistances}
               updateStatus={updateStatus}
             />
-
           </div>
 
         </div>
-
+        
       </div>
 
     </div>

@@ -66,13 +66,19 @@ export default function RouteResult({
 
             <div>
 
-              <div className="font-bold">
-                {i + 1}. {r.nama}
-              </div>
+            <div className="font-bold">
+              {i + 1}. {r.nama}
+            </div>
 
-              <div className="text-xs text-slate-500">
-                RT {r.rt} RW {r.rw}
+            {r.desa && (
+              <div className="text-xs text-blue-600 font-medium">
+                Desa {r.desa}
               </div>
+            )}
+
+            <div className="text-xs text-slate-500">
+              RT {r.rt} RW {r.rw}
+            </div>
 
             </div>
 
@@ -127,15 +133,24 @@ export default function RouteResult({
 
           {segmentDistances[i] && (
 
-            <div className="
-              mt-2
-              text-blue-600
-              text-sm
-              font-medium
-            ">
-              ↓ {segmentDistances[i]
+            <div
+              className="
+                mt-2
+                bg-blue-50
+                text-blue-700
+                px-3
+                py-2
+                rounded-lg
+                text-sm
+                font-medium
+              "
+            >
+              📍 Jarak ke titik berikutnya:
+              {" "}
+              {segmentDistances[i]
                 .distance
-                .toFixed(2)} km
+                .toFixed(2)}
+              km
             </div>
 
           )}

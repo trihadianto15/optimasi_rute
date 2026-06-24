@@ -190,3 +190,37 @@ export function extractRTRW(text) {
 
   return { rt: null, rw: null };
 }
+
+export function extractVillage(
+  text
+) {
+
+  const villages = [
+
+    "pawenang",
+    "kalaparea",
+    "cisarua",
+    "nagrak utara"
+
+  ];
+
+  const normalized =
+    text.toLowerCase();
+
+  for (const village of villages) {
+
+    if (
+      normalized.includes(
+        village
+      )
+    ) {
+
+      return village;
+
+    }
+
+  }
+
+  return null;
+
+}
